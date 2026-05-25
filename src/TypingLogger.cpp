@@ -13,6 +13,7 @@ CTypingLogger::CTypingLogger()
 	m_bPaused = FALSE;
 	m_hLastWnd = NULL;
 	m_lastEventTime = GetTickCount();
+	m_lastClipID = -1;
 }
 
 CTypingLogger::~CTypingLogger()
@@ -59,13 +60,16 @@ LRESULT CALLBACK CTypingLogger::LowLevelKeyboardProc(int nCode, WPARAM wParam, L
 void CTypingLogger::HandleKey(DWORD vkCode, BOOL bKeyDown)
 {
 	HWND hActive = GetForegroundWindow();
-	if (hActive != m_hLastWnd)
+	DWORD now = GetTickCount();
+
+	// LOGICAL BREAK: Start a NEW chunk if:
+	// 1. You switched windows
+	// 2. You were idle for more than 5 seconds
+	if (hActive != m_hLastWnd || (now - m_lastEventTime > 5000))
 	{
-		FlushBuffer();
+		m_lastClipID = -1;
+		m_csBuffer.Empty();
 		m_hLastWnd = hActive;
-		TCHAR title[256];
-		GetWindowText(hActive, title, 256);
-		m_csLastWndTitle = title;
 	}
 
 	if (IsSensitiveWindow(hActive) || IsPasswordField(hActive))
@@ -88,7 +92,6 @@ void CTypingLogger::HandleKey(DWORD vkCode, BOOL bKeyDown)
 	else if (vkCode == VK_RETURN)
 	{
 		m_csBuffer += _T("\r\n");
-		FlushBuffer();
 	}
 	else if (vkCode == VK_BACK)
 	{
@@ -96,37 +99,79 @@ void CTypingLogger::HandleKey(DWORD vkCode, BOOL bKeyDown)
 			m_csBuffer.Truncate(m_csBuffer.GetLength() - 1);
 	}
 
-	if (m_csBuffer.GetLength() > 500 || (GetTickCount() - m_lastEventTime > 5000 && m_csBuffer.GetLength() > 0))
+	if (m_csBuffer.GetLength() > 0)
 	{
 		FlushBuffer();
 	}
-	m_lastEventTime = GetTickCount();
+	m_lastEventTime = now;
 }
 
 void CTypingLogger::FlushBuffer()
 {
 	if (m_csBuffer.IsEmpty()) return;
 
-	CClip* pClip = new CClip;
-	pClip->m_Time = CTime::GetCurrentTime();
-	pClip->m_Desc = m_csLastWndTitle + _T(": ") + m_csBuffer;
-	pClip->m_lType = 1; // Typing
-	
-	// Add format CF_UNICODETEXT
-	int len = (m_csBuffer.GetLength() + 1) * sizeof(TCHAR);
-	HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, len);
-	if (hGlobal)
+	try
 	{
-		LPVOID pData = GlobalLock(hGlobal);
-		memcpy(pData, (LPCTSTR)m_csBuffer, len);
-		GlobalUnlock(hGlobal);
-		pClip->m_Formats.AddNew(CF_UNICODETEXT, hGlobal);
+		CString csEscapedBuffer = m_csBuffer;
+		csEscapedBuffer.Replace(_T("'"), _T("''"));
+
+		// Check if the last clip added to the DB is the one we are working on
+		BOOL bUpdate = FALSE;
+		if (m_lastClipID != -1)
+		{
+			CppSQLite3Query q = theApp.m_db.execQueryEx(_T("SELECT lID FROM Main ORDER BY lID DESC LIMIT 1"));
+			if (!q.eof() && q.getIntField(_T("lID")) == m_lastClipID)
+			{
+				bUpdate = TRUE;
+			}
+		}
+
+		if (bUpdate)
+		{
+			// Update existing clip
+			CString csSQL;
+			csSQL.Format(_T("UPDATE Main SET mText = '%s', lDate = %lld WHERE lID = %d"), (LPCTSTR)csEscapedBuffer, (long long)CTime::GetCurrentTime().GetTime(), m_lastClipID);
+			theApp.m_db.execDML(csSQL);
+
+			// Also update Data table (CF_UNICODETEXT)
+			int len = (m_csBuffer.GetLength() + 1) * sizeof(TCHAR);
+			theApp.m_db.execDMLEx(_T("UPDATE Data SET ooData = ? WHERE lParentID = %d AND strClipBoardFormat = 'CF_UNICODETEXT'"), m_lastClipID);
+		}
+		else
+		{
+			// Create new clip
+			CClip* pClip = new CClip;
+			pClip->m_Time = CTime::GetCurrentTime();
+			pClip->m_Desc = m_csBuffer;
+			pClip->m_lType = 1; // Typing
+			
+			// Add format CF_UNICODETEXT
+			int len = (m_csBuffer.GetLength() + 1) * sizeof(TCHAR);
+			HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, len);
+			if (hGlobal)
+			{
+				LPVOID pData = GlobalLock(hGlobal);
+				memcpy(pData, (LPCTSTR)m_csBuffer, len);
+				GlobalUnlock(hGlobal);
+				pClip->m_Formats.AddNew(CF_UNICODETEXT, hGlobal);
+			}
+
+			pClip->AddToDB();
+			m_lastClipID = pClip->ID();
+			delete pClip;
+		}
+
+		// Notify Ditto to refresh the list
+		HWND hWnd = theApp.m_MainhWnd;
+		if (hWnd)
+		{
+			::PostMessage(hWnd, WM_CLIPBOARD_COPIED, 0, 0);
+		}
 	}
-
-	pClip->AddToDB();
-	delete pClip;
-
-	m_csBuffer.Empty();
+	catch (CppSQLite3Exception& e)
+	{
+		Log(StrF(_T("TypingLogger Flush Error: %s"), e.errorMessage()));
+	}
 }
 
 BOOL CTypingLogger::IsSensitiveWindow(HWND hWnd)

@@ -21,9 +21,9 @@ private:
 
 	HHOOK m_hhkLowLevelKybd;
 	CString m_csBuffer;
-	CString m_csLastWndTitle;
 	HWND m_hLastWnd;
 	DWORD m_lastEventTime;
+	int m_lastClipID;
 	BOOL m_bPaused;
 
 	static CTypingLogger* m_pInstance;
