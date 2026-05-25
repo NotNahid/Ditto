@@ -1149,7 +1149,7 @@ CString WndName(HWND hParent)
 
 void CMainFrame::OnFirstHelp() 
 {
-	CHyperLink::GotoURL(_T("https://github.com/sabrogden/Ditto/wiki"));
+	CHyperLink::GotoURL(_T("https://github.com/sabrogden/Ditto/wiki"), SW_SHOW);
 }
 
 void CMainFrame::OnToggleTypingLog()
