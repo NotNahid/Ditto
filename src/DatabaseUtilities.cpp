@@ -460,6 +460,17 @@ BOOL ValidDB(CString csPath, BOOL bUpgrade)
 
 		try
 		{
+			db.execQuery(_T("SELECT lType FROM Main"));
+		}
+		catch (CppSQLite3Exception& e)
+		{
+			db.execDML(_T("ALTER TABLE Main ADD lType INTEGER DEFAULT 0"));
+
+			e.errorCode();
+		}
+
+		try
+		{
 			db.execQuery(_T("SELECT MoveToGroupShortCut FROM Main"));
 			db.execQuery(_T("SELECT GlobalMoveToGroupShortCut FROM Main"));
 		}
@@ -716,7 +727,8 @@ BOOL CreateDB(CString csFile)
 			_T("stickyClipOrder REAL, ")
 			_T("stickyClipGroupOrder REAL, ")
 			_T("MoveToGroupShortCut INTEGER, ")
-			_T("GlobalMoveToGroupShortCut INTEGER);"));
+			_T("GlobalMoveToGroupShortCut INTEGER, ")
+			_T("lType INTEGER DEFAULT 0);"));
 
 		db.execDML(_T("CREATE TABLE Data(")
 			_T("lID INTEGER PRIMARY KEY AUTOINCREMENT, ")

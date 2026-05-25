@@ -1662,7 +1662,7 @@ BOOL CQPasteWnd::FillList(CString csSQLSearch)
 
 	sql.Format(_T("SELECT %s Main.lID, Main.mText, Main.lParentID, Main.lDontAutoDelete, ")
 		_T("Main.lShortCut, Main.bIsGroup, Main.QuickPasteText, Main.clipOrder, Main.clipGroupOrder, ")
-		_T("Main.stickyClipOrder, Main.stickyClipGroupOrder, Main.lDate, Main.lastPasteDate FROM Main %s ")
+		_T("Main.stickyClipOrder, Main.stickyClipGroupOrder, Main.lDate, Main.lastPasteDate, Main.lType FROM Main %s ")
 		_T("where %s order by %s"), IsDistinct, dataJoin, strFilter, csSort);
 
 
@@ -5718,6 +5718,11 @@ void CQPasteWnd::GetDispInfo(NMHDR* pNMHDR, LRESULT* pResult)
 						cs += "<pasted>";
 					}
 
+					if (m_listItems[pItem->iItem].m_lType == 1)
+					{
+						cs += "<typed>";
+					}
+
 					// pipe is the "end of symbols" marker
 					cs += "|" + CMainTableFunctions::GetDisplayText(CGetSetOptions::m_nLinesPerRow, m_listItems[pItem->iItem].m_Desc);
 
@@ -6497,6 +6502,7 @@ void CQPasteWnd::FillMainTable(CMainTable& table, CppSQLite3Query& q)
 	table.m_stickyClipGroupOrder = q.getFloatField(_T("stickyClipGroupOrder"));
 	table.m_dateCopied = q.getInt64Field(_T("lDate"));
 	table.m_datePasted = q.getInt64Field(_T("lastPasteDate"));
+	table.m_lType = q.getIntField(_T("lType"));
 }
 
 void CQPasteWnd::OnDestroy()

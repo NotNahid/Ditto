@@ -513,6 +513,8 @@ void CCP_MainApp::AfterMainCreate()
 	m_Addins.LoadAll();
 #endif
 	
+	m_TypingLogger.Start();
+
 	m_bAppRunning = true;
 }
 
@@ -587,6 +589,9 @@ void CCP_MainApp::BeforeMainClose()
 	ASSERT( m_bAppRunning && !m_bAppExiting );
 	m_bAppRunning = false;
 	m_bAppExiting = true;
+
+	m_TypingLogger.Stop();
+
 	g_HotKeys.UnregisterAll();
 	StopServerThread();
 	StopCopyThread();

@@ -23,6 +23,7 @@
 #include "UAC_Thread.h"
 #include "ICU_String.h"
 #include "ClipEditThread.h"
+#include "TypingLogger.h"
 
 
 extern class CCP_MainApp theApp;
@@ -34,6 +35,7 @@ public:
 	~CCP_MainApp();
 
 	CppSQLite3DB m_db;
+	CTypingLogger m_TypingLogger;
 	bool m_databaseOnNetworkShare;
 
 	HANDLE	m_hMutex; // for singleton app

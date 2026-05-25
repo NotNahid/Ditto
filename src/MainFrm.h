@@ -108,6 +108,8 @@ protected:
     afx_msg void OnFirstShowquickpaste();
     afx_msg void OnFirstToggleConnectCV();
     afx_msg void OnUpdateFirstToggleConnectCV(CCmdUI *pCmdUI);
+    afx_msg void OnToggleTypingLog();
+    afx_msg void OnUpdateToggleTypingLog(CCmdUI *pCmdUI);
     afx_msg void OnFirstHelp();
     //}}AFX_MSG
     afx_msg LRESULT OnHotKey(WPARAM wParam, LPARAM lParam);

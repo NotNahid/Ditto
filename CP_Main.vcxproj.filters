@@ -379,6 +379,9 @@
     <ClCompile Include="src\TrayWnd.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\TypingLogger.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="src\UAC_Helper.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -898,6 +901,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\TrayWnd.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TypingLogger.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\UAC_Helper.h">

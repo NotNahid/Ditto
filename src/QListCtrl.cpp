@@ -586,6 +586,11 @@ void CQListCtrl::OnCustomdrawList(NMHDR* pNMHDR, LRESULT* pResult)
 				m_stickyImage.Draw(pDC, *m_windowDpi, this, rcText.left, rcText.top, false, false);
 				rcText.left += m_stickyImage.ImageWidth() + m_windowDpi->Scale(2);
 			}
+			if (strSymbols.Find(_T("<typed>")) >= 0) //typed history
+			{
+				m_typedImage.Draw(pDC, *m_windowDpi, this, rcText.left, rcText.top, false, false);
+				rcText.left += m_typedImage.ImageWidth() + m_windowDpi->Scale(2);
+			}
 		}
 
 		if (DrawRtfText(nItem, rcText, pDC) == FALSE)
@@ -2284,6 +2289,9 @@ void CQListCtrl::SetDpiInfo(CDPI* dpi)
 
 	m_stickyImage.Reset();
 	m_stickyImage.LoadStdImageDPI(m_windowDpi->GetDPI(), IDB_STICKY_16_16, IDB_STICKY_20_20, IDB_STICKY_24_24, IDB_STICKY_24_24, IDB_STICKY_32_32, _T("PNG"));
+
+	m_typedImage.Reset();
+	m_typedImage.LoadStdImageDPI(m_windowDpi->GetDPI(), IDB_KEY_16_16, IDB_KEY_20_20, IDB_KEY_24_24, IDB_KEY_24_24, IDB_KEY_32_32, _T("PNG"));
 
 	DeleteObject(m_SmallFont);
 

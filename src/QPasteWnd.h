@@ -32,18 +32,20 @@ public:
 		m_bHasShortCut(false), 
 		m_bHasParent(false),
 		m_dateCopied(0),
-		m_datePasted(0)
-	{
+		m_datePasted(0),
+		m_lType(0)
+		{
 
-	}
+		}
 
-    ~CMainTable()
-	{
+		~CMainTable()
+		{
 
-    }
+		}
 
-    long m_lID;
-    CString m_Desc;
+		int m_lID;
+		int m_lType;
+		CString m_Desc;
     bool m_bDontAutoDelete;
     bool m_bIsGroup;
     bool m_bHasShortCut;

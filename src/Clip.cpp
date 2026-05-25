@@ -234,7 +234,8 @@ CClip::CClip() :
 	m_clipGroupOrder(0),
 	m_globalShortCut(FALSE),
 	m_moveToGroupShortCut(0),
-	m_globalMoveToGroupShortCut(FALSE)
+	m_globalMoveToGroupShortCut(FALSE),
+	m_lType(0)
 {
 	m_copyReason = CopyReasonEnum::COPY_TO_UNKOWN;
 	m_addToDbStickyEnum = AddToDbStickyEnum::INVALID;
@@ -958,8 +959,8 @@ bool CClip::AddToMainTable()
 		m_csQuickPaste.Replace(_T("'"), _T("''"));
 
 		CString cs;
-		cs.Format(_T("INSERT into Main (lDate, mText, lShortCut, lDontAutoDelete, CRC, bIsGroup, lParentID, QuickPasteText, clipOrder, clipGroupOrder, globalShortCut, lastPasteDate, stickyClipOrder, stickyClipGroupOrder, MoveToGroupShortCut, GlobalMoveToGroupShortCut) ")
-						_T("values(%lld, '%s', %d, %d, %d, %d, %d, '%s', %f, %f, %d, %lld, %f, %f, %d, %d);"),
+		cs.Format(_T("INSERT into Main (lDate, mText, lShortCut, lDontAutoDelete, CRC, bIsGroup, lParentID, QuickPasteText, clipOrder, clipGroupOrder, globalShortCut, lastPasteDate, stickyClipOrder, stickyClipGroupOrder, MoveToGroupShortCut, GlobalMoveToGroupShortCut, lType) ")
+						_T("values(%lld, '%s', %d, %d, %d, %d, %d, '%s', %f, %f, %d, %lld, %f, %f, %d, %d, %d);"),
 							m_Time.GetTime(),
 							m_Desc,
 							m_shortCut,
@@ -975,7 +976,8 @@ bool CClip::AddToMainTable()
 							m_stickyClipOrder,
 							m_stickyClipGroupOrder,
 							m_moveToGroupShortCut,
-							m_globalMoveToGroupShortCut);
+							m_globalMoveToGroupShortCut,
+							m_lType);
 
 		theApp.m_db.execDML(cs);
 
@@ -1010,22 +1012,23 @@ bool CClip::ModifyMainTable()
 			_T("stickyClipOrder = %f, ")
 			_T("stickyClipGroupOrder = %f, ")
 			_T("MoveToGroupShortCut = %d, ")
-			_T("GlobalMoveToGroupShortCut = %d ")
+			_T("GlobalMoveToGroupShortCut = %d, ")
+			_T("lType = %d ")
 			_T("WHERE lID = %d;"), 
 			m_shortCut, 
 			m_Desc, 
 			m_parentId, 
 			m_dontAutoDelete, 
-			m_csQuickPaste,
-			m_clipOrder,
-			m_clipGroupOrder,
+			m_csQuickPaste, 
+			m_clipOrder, 
+			m_clipGroupOrder, 
 			m_globalShortCut,
 			m_stickyClipOrder,
 			m_stickyClipGroupOrder,
 			m_moveToGroupShortCut,
 			m_globalMoveToGroupShortCut,
+			m_lType,
 			m_id);
-
 		bRet = true;
 	}
 	CATCH_SQLITE_EXCEPTION_AND_RETURN(false)
@@ -1582,6 +1585,7 @@ BOOL CClip::LoadMainTable(int id)
 			m_stickyClipGroupOrder = q.getFloatField(_T("stickyClipGroupOrder"));
 			m_moveToGroupShortCut = q.getIntField(_T("MoveToGroupShortCut"));
 			m_globalMoveToGroupShortCut = q.getIntField(_T("GlobalMoveToGroupShortCut"));
+			m_lType = q.getIntField(_T("lType"));
 
 			m_id = id;
 

@@ -441,6 +441,7 @@ BEGIN
         MENUITEM "Help",                        ID_FIRST_HELP
         MENUITEM SEPARATOR
         MENUITEM "Connect To Clipboard",        ID_FIRST_TOGGLECONNECTCV
+        MENUITEM "Toggle Typing Log",           ID_FIRST_TOGGLETYPINGLOG
         MENUITEM "Save Current Clipboard",      ID_FIRST_SAVECURRENTCLIPBOARD
         MENUITEM SEPARATOR
         MENUITEM "Exit",                        ID_FIRST_EXIT

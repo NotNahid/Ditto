@@ -39,6 +39,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_FIRST_SHOWQUICKPASTE, OnFirstShowquickpaste)
 	ON_COMMAND(ID_FIRST_TOGGLECONNECTCV, OnFirstToggleConnectCV)
 	ON_UPDATE_COMMAND_UI(ID_FIRST_TOGGLECONNECTCV, OnUpdateFirstToggleConnectCV)
+	ON_COMMAND(ID_FIRST_TOGGLETYPINGLOG, OnToggleTypingLog)
+	ON_UPDATE_COMMAND_UI(ID_FIRST_TOGGLETYPINGLOG, OnUpdateToggleTypingLog)
 	ON_COMMAND(ID_FIRST_HELP, OnFirstHelp)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_HOTKEY, OnHotKey)
@@ -1145,9 +1147,19 @@ CString WndName(HWND hParent)
     return cWindowText;
 }
 
-void CMainFrame::OnFirstHelp()
+void CMainFrame::OnFirstHelp() 
 {
-    CHyperLink::GotoURL(_T("https://github.com/sabrogden/Ditto/wiki"), SW_SHOW);
+	CHyperLink::GotoURL(_T("https://github.com/sabrogden/Ditto/wiki"));
+}
+
+void CMainFrame::OnToggleTypingLog()
+{
+	theApp.m_TypingLogger.Pause(!theApp.m_TypingLogger.IsPaused());
+}
+
+void CMainFrame::OnUpdateToggleTypingLog(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetCheck(!theApp.m_TypingLogger.IsPaused());
 }
 
 void CMainFrame::ShowEditWnd(CClipIDs& Ids)

@@ -194,6 +194,7 @@ protected:
 	CGdiImageDrawer m_inFolderImage;
 	CGdiImageDrawer m_shortCutImage;
 	CGdiImageDrawer m_stickyImage;
+	CGdiImageDrawer m_typedImage;
 	int m_rowHeight;
 	CString m_searchText;
 	BOOL m_showIfClipWasPasted;

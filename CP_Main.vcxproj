@@ -776,6 +776,7 @@
     </ClCompile>
     <ClCompile Include="src\ToolTipEx.cpp" />
     <ClCompile Include="src\TrayWnd.cpp" />
+    <ClCompile Include="src\TypingLogger.cpp" />
     <ClCompile Include="src\UAC_Helper.cpp" />
     <ClCompile Include="src\UAC_Thread.cpp" />
     <ClCompile Include="src\WildCardMatch.cpp" />
@@ -960,6 +961,7 @@
     <ClInclude Include="src\TinyXml\tinyxml.h" />
     <ClInclude Include="src\ToolTipEx.h" />
     <ClInclude Include="src\TrayWnd.h" />
+    <ClInclude Include="src\TypingLogger.h" />
     <ClInclude Include="src\UAC_Helper.h" />
     <ClInclude Include="src\UAC_Thread.h" />
     <ClInclude Include="src\UnicodeMacros.h" />

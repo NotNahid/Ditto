@@ -876,6 +876,7 @@
 #define ID_MENU_SHOWSTARREDCLIPS        33000
 #define ID_SPECIALPASTE_PASTEASIMAGE    33001
 #define ID_MENU_GOTOENTRY               33002
+#define ID_FIRST_TOGGLETYPINGLOG        33003
 
 // Next default values for new objects
 //
